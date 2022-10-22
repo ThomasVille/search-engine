@@ -18,6 +18,7 @@ import Box from '@mui/joy/Box';
 import Checkbox from '@mui/joy/Checkbox';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
+import Switch from '@mui/joy/Switch';
 
 type LoaderData = {
   bikeListItems: Bike[];
@@ -27,23 +28,12 @@ export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url);
   const default_battery_life: number[] = url.searchParams.getAll("battery_life").map(v => +v);
   const default_motor_kind = url.searchParams.getAll("motor_kind");
+  const default_integrated_lights = url.searchParams.get("integrated_lights");
 
   const bikeListItems = await getBikeListItems(
     default_battery_life.length ? default_battery_life : [0, 200],
     default_motor_kind.length ? default_motor_kind : ["rear", "center", "front"],
-  );
-
-  return json({ bikeListItems });
-};
-
-export const action: ActionFunction = async ({ request, params }) => {
-  const url = new URL(request.url);
-  const default_battery_life: number[] = url.searchParams.getAll("battery_life").map(v => +v);
-  const default_motor_kind = url.searchParams.getAll("motor_kind");
-
-  const bikeListItems = await getBikeListItems(
-    default_battery_life.length ? default_battery_life : [0, 200],
-    default_motor_kind.length ? default_motor_kind : ["rear", "center", "front"],
+    default_integrated_lights != null ? default_integrated_lights === "on" : true,
   );
 
   return json({ bikeListItems });
@@ -60,6 +50,7 @@ export default function BikesPage() {
   const [searchParams] = useSearchParams();
   const default_battery_life = searchParams.getAll("battery_life").map(v => +v);
   const default_motor_kind = searchParams.getAll("motor_kind");
+  const default_integrated_lights = searchParams.get("integrated_lights");
   const [value, setValue] = React.useState<number[]>(default_battery_life.length ? default_battery_life : [0, 200]);
 
   const debouncedSubmit = useCallback(
@@ -80,6 +71,13 @@ export default function BikesPage() {
     } else {
       setMotorKind(motorKind.filter(v => v !== checkedMotorKind));
     }
+    debouncedSubmit(document.forms[0], { replace: true });
+  }
+
+  const [integratedLights, setIntegratedLights] = React.useState(default_integrated_lights != null ? default_integrated_lights === "on" : true);
+
+  const handleIntegratedLightsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setIntegratedLights(event?.target?.checked);
     debouncedSubmit(document.forms[0], { replace: true });
   }
 
@@ -105,24 +103,26 @@ export default function BikesPage() {
                 min={0}
                 max={200}
               />
-              <Box>
-                <Typography id="motor-kind-group" level="body1" fontWeight="lg" mb={1}>
-                Type de moteur
-                </Typography>
-                <Box role="group" aria-labelledby="motor-kind-group">
-                  <List size="sm">
-                    <ListItem>
-                      <Checkbox name="motor_kind" value="rear" label="Roue Arrière" checked={motorKind.includes("rear")} onChange={handleMotorKindChange("rear")}/>
-                    </ListItem>
-                    <ListItem>
-                      <Checkbox name="motor_kind" value="center" label="Pédalier" checked={motorKind.includes("center")} onChange={handleMotorKindChange("center")}/>
-                    </ListItem>
-                    <ListItem>
-                      <Checkbox name="motor_kind" value="front" label="Roue Avant" checked={motorKind.includes("front")} onChange={handleMotorKindChange("front")}/>
-                    </ListItem>
-                  </List>
-                </Box>
+              <Typography id="motor-kind-group" level="body1" fontWeight="lg" mb={1}>
+              Type de moteur
+              </Typography>
+              <Box role="group" aria-labelledby="motor-kind-group">
+                <List size="sm">
+                  <ListItem>
+                    <Checkbox name="motor_kind" value="rear" label="Roue Arrière" checked={motorKind.includes("rear")} onChange={handleMotorKindChange("rear")}/>
+                  </ListItem>
+                  <ListItem>
+                    <Checkbox name="motor_kind" value="center" label="Pédalier" checked={motorKind.includes("center")} onChange={handleMotorKindChange("center")}/>
+                  </ListItem>
+                  <ListItem>
+                    <Checkbox name="motor_kind" value="front" label="Roue Avant" checked={motorKind.includes("front")} onChange={handleMotorKindChange("front")}/>
+                  </ListItem>
+                </List>
               </Box>
+              <Typography id="integrated-lights-group" level="body1" fontWeight="lg" mb={1}>
+              Lumières intégrées
+              </Typography>
+              <Switch componentsProps={{ input: { name: 'integrated_lights' } }} checked={integratedLights} onChange={handleIntegratedLightsChange} />
             </Form>
           </div>
         </div>

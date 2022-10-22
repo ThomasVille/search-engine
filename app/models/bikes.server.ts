@@ -10,14 +10,15 @@ export type Bike = {
   motor_kind: string;
 };
 
-export async function getBikeListItems(battery_life: number[], motor_kind: string[]): Promise<Bike[] | null> {
+export async function getBikeListItems(battery_life: number[], motor_kind: string[], integrated_lights: boolean): Promise<Bike[] | null> {
   if (battery_life.length != 2) return null;
   const { data } = await supabase
     .from("ebikes")
     .select("id, product_name, battery_life, source, pictures, brand, motor_kind")
     .gte("battery_life", Math.min(...battery_life))
     .lte("battery_life", Math.max(...battery_life))
-    .in("motor_kind", motor_kind);
+    .in("motor_kind", motor_kind)
+    .eq("integrated_lights", integrated_lights);
 
   return data;
 }

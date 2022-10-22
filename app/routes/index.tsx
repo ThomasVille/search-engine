@@ -123,6 +123,12 @@ export default function BikesPage() {
               Lumières intégrées
               </Typography>
               <Switch componentsProps={{ input: { name: 'integrated_lights' } }} checked={integratedLights} onChange={handleIntegratedLightsChange} />
+              {/*
+              Since the default value of this field is `true`, unchecking it makes the server use `true`.
+              So this `default` value is there to handle the case where we the checkbox is unchecked.
+              See https://stackoverflow.com/questions/1809494/post-unchecked-html-checkboxes.
+               */}
+              <input type='hidden' value='default' name='integrated_lights' />
             </Form>
           </div>
         </div>

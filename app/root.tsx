@@ -15,7 +15,7 @@ import { CssVarsProvider } from '@mui/joy/styles';
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: "Tout trouver - Vélos électriques" };
 };
 
 export const links: LinksFunction = () => {

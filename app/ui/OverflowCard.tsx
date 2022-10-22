@@ -31,7 +31,7 @@ export default function OverflowCard({ img, link, title, subtitle, left_footer, 
         The height depends on the fontSize and the number of lines of text shown.
         See https://css-tricks.com/line-clampin/ for methods for clamping text to a number of lines.
         */}
-            <Typography level="h2" sx={{ fontSize: 'md', mt: 2, display: "-webkit-box", "-webkit-line-clamp": "2", overflow: "hidden", "-webkit-box-orient": "vertical", height: "2.4em" }}>
+            <Typography level="h2" sx={{ fontSize: 'md', mt: 2, display: "-webkit-box", WebkitLineClamp: "2", overflow: "hidden", WebkitBoxOrient: "vertical", height: "2.4em" }}>
                 {title}
             </Typography>
             <Typography level="body2" sx={{ mt: 0.5, mb: 2 }}>

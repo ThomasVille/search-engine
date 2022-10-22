@@ -1,14 +1,18 @@
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, NavLink, Outlet, useLoaderData, useSubmit, useSearchParams } from "@remix-run/react";
+import { json } from "@remix-run/node";
+import { Form, Link, useLoaderData, useSubmit, useSearchParams } from "@remix-run/react";
 import React, { useCallback } from 'react';
 import {debounce} from 'lodash';
-import invariant from "tiny-invariant";
 
+// MODELS
 import type { Bike } from "~/models/bikes.server";
 import { getBikeListItems } from "~/models/bikes.server";
+
+// UI
 import Slider from '@mui/joy/Slider';
 import Typography from '@mui/joy/Typography';
+import Grid from '@mui/material/Grid';
+import OverflowCard from "~/ui/OverflowCard";
 
 type LoaderData = {
   bikeListItems: Bike[];
@@ -43,7 +47,7 @@ export default function BikesPage() {
   const [value, setValue] = React.useState<number[]>(battery_life.length ? battery_life : [0, 200]);
 
   const debouncedSubmit = useCallback(
-		debounce((target: any, options: any) => submit(target, options), 500),
+		debounce((target: any, options: any) => submit(target, options), 250),
 		[],
 	);
 
@@ -79,20 +83,23 @@ export default function BikesPage() {
         </div>
 
         <div className="flex-1 p-6">
-          <Outlet />
-          {(!data.bikeListItems || data.bikeListItems.length === 0) ? (
-              <p className="p-4">Pas de vélos</p>
+            <Grid container spacing={1}>
+            {(!data.bikeListItems || data.bikeListItems.length === 0) ? (
+              <p className="p-4">Aucun vélo ne correspond à ces critères</p>
             ) : (
-              <ol>
-                {data.bikeListItems.map((bike) => (
-                  <li key={bike.id}>
-                    <a href={bike.source}>
-                      {bike.pictures && bike.pictures.length > 0 ? <img className="inline-block w-40" src={bike.pictures[0]}/> : ''} {bike.product_name}
-                    </a>
-                  </li>
-                ))}
-              </ol>
+                data.bikeListItems.map((bike) => (
+                  <Grid item key={bike.id}>
+                    <OverflowCard
+                      img={bike.pictures[0]}
+                      link={bike.source}
+                      title={bike.product_name}
+                      subtitle={bike.brand}
+                      left_footer={bike.battery_life + "km"}
+                      right_footer={""} />
+                  </Grid>
+                ))
             )}
+            </Grid>
         </div>
       </main>
     </div>

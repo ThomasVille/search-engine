@@ -28,12 +28,12 @@ export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url);
   const default_battery_life: number[] = url.searchParams.getAll("battery_life").map(v => +v);
   const default_motor_kind = url.searchParams.getAll("motor_kind");
-  const default_integrated_lights = url.searchParams.get("integrated_lights");
+  const default_integrated_lights = url.searchParams.getAll("integrated_lights");
 
   const bikeListItems = await getBikeListItems(
     default_battery_life.length ? default_battery_life : [0, 200],
     default_motor_kind.length ? default_motor_kind : ["rear", "center", "front"],
-    default_integrated_lights != null ? default_integrated_lights === "on" : true,
+    default_integrated_lights.length ? default_integrated_lights : ["true", "false"],
   );
 
   return json({ bikeListItems });
@@ -50,7 +50,7 @@ export default function BikesPage() {
   const [searchParams] = useSearchParams();
   const default_battery_life = searchParams.getAll("battery_life").map(v => +v);
   const default_motor_kind = searchParams.getAll("motor_kind");
-  const default_integrated_lights = searchParams.get("integrated_lights");
+  const default_integrated_lights = searchParams.getAll("integrated_lights");
   const [value, setValue] = React.useState<number[]>(default_battery_life.length ? default_battery_life : [0, 200]);
 
   const debouncedSubmit = useCallback(
@@ -74,10 +74,14 @@ export default function BikesPage() {
     debouncedSubmit(document.forms[0], { replace: true });
   }
 
-  const [integratedLights, setIntegratedLights] = React.useState(default_integrated_lights != null ? default_integrated_lights === "on" : true);
+  const [integratedLights, setIntegratedLights] = React.useState(default_integrated_lights.length ? default_integrated_lights : ["true", "false"]);
 
-  const handleIntegratedLightsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setIntegratedLights(event?.target?.checked);
+  const handleIntegratedLightsChange = (checkedIntegratedLights: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event?.target?.checked) {
+      setIntegratedLights([...new Set(integratedLights.concat(checkedIntegratedLights))]);
+    } else {
+      setIntegratedLights(integratedLights.filter(v => v !== checkedIntegratedLights));
+    }
     debouncedSubmit(document.forms[0], { replace: true });
   }
 
@@ -122,13 +126,16 @@ export default function BikesPage() {
               <Typography id="integrated-lights-group" level="body1" fontWeight="lg" mb={1}>
               Lumières intégrées
               </Typography>
-              <Switch componentsProps={{ input: { name: 'integrated_lights' } }} checked={integratedLights} onChange={handleIntegratedLightsChange} />
-              {/*
-              Since the default value of this field is `true`, unchecking it makes the server use `true`.
-              So this `default` value is there to handle the case where we the checkbox is unchecked.
-              See https://stackoverflow.com/questions/1809494/post-unchecked-html-checkboxes.
-               */}
-              <input type='hidden' value='default' name='integrated_lights' />
+              <Box role="group" aria-labelledby="integrated-lights-group">
+                <List size="sm">
+                  <ListItem>
+                    <Checkbox name="integrated_lights" value="true" label="Oui" checked={integratedLights.includes("true")} onChange={handleIntegratedLightsChange("true")}/>
+                  </ListItem>
+                  <ListItem>
+                    <Checkbox name="integrated_lights" value="false" label="Non" checked={integratedLights.includes("false")} onChange={handleIntegratedLightsChange("false")}/>
+                  </ListItem>
+                </List>
+              </Box>
             </Form>
           </div>
         </div>

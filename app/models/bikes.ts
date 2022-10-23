@@ -67,5 +67,41 @@ export const BikeFilterDescription: BikeFilterDescriptionType = {
         type: BikeFilterType.BOOLEAN,
         label: "Batterie amovible",
         defaultValue: ["true", "false"],
+    },
+    front_brakes: {
+        type: BikeFilterType.ENUM,
+        label: "Freins avant",
+        options: [{
+            label: "A disque hydraulique",
+            value: "hydraulic_disc",
+          },
+          {
+            label: "A disque mécanique",
+            value: "mechanical_disc",
+          },
+          {
+            label: "A patins",
+            value: "rim",
+          },
+        ],
+        defaultValue: ["hydraulic_disc", "mechanical_disc", "rim"],
+    },
+    rear_brakes: {
+        type: BikeFilterType.ENUM,
+        label: "Freins arrière",
+        options: [{
+            label: "A disque hydraulique",
+            value: "hydraulic_disc",
+          },
+          {
+            label: "A disque mécanique",
+            value: "mechanical_disc",
+          },
+          {
+            label: "A patins",
+            value: "rim",
+          },
+        ],
+        defaultValue: ["hydraulic_disc", "mechanical_disc", "rim"],
     }
 }

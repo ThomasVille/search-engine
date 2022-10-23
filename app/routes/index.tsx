@@ -18,18 +18,17 @@ type LoaderData = {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  const url = new URL(request.url);
-  const default_battery_life: number[] = url.searchParams.getAll("battery_life").map(v => +v);
-  const default_motor_kind = url.searchParams.getAll("motor_kind");
-  const default_integrated_lights = url.searchParams.getAll("integrated_lights");
+    const url = new URL(request.url);
+    const searchFields = Object.fromEntries(
+      Object.entries(BikeFilterDescription).map(([key, value]) => {
+        const urlValue = url.searchParams.getAll(key);
+        return [key, urlValue.length ? urlValue : BikeFilterDescription[key].defaultValue.map(v => v.toString())];
+      })
+    );
 
-  const bikeListItems = await getBikeListItems(
-    default_battery_life.length ? default_battery_life : BikeFilterDescription.battery_life.defaultValue,
-    default_motor_kind.length ? default_motor_kind : BikeFilterDescription.motor_kind.defaultValue,
-    default_integrated_lights.length ? default_integrated_lights : BikeFilterDescription.integrated_lights.defaultValue,
-  );
+    const bikeListItems = await getBikeListItems(searchFields);
 
-  return json({ bikeListItems });
+    return json({ bikeListItems });
 };
 
 export default function BikesPage() {

@@ -62,5 +62,10 @@ export const BikeFilterDescription: BikeFilterDescriptionType = {
         type: BikeFilterType.BOOLEAN,
         label: "Lumières intégrées",
         defaultValue: ["true", "false"],
+    },
+    removable_battery: {
+        type: BikeFilterType.BOOLEAN,
+        label: "Batterie amovible",
+        defaultValue: ["true", "false"],
     }
 }

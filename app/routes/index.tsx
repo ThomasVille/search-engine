@@ -4,7 +4,7 @@ import { Form, Link, useLoaderData } from "@remix-run/react";
 
 // MODELS
 import { Bike, getBikeListItems } from "~/models/bikes.server";
-import { BikeFilterDescription } from "~/models/bikes";
+import { BikeFilterDescription, BikeFilterType } from "~/models/bikes";
 
 // UI
 import Grid from '@mui/material/Grid';
@@ -43,48 +43,44 @@ export default function BikesPage() {
           <hr />
           <div className="flex-1 p-6">
             <Form method="get">
-              <RangeFilter
-                label="Autonomie"
-                dbName="battery_life"
-                unit="km"
-                defaultValue={BikeFilterDescription.battery_life.defaultValue}
-                min={0}
-                max={200}
-              />
-              <EnumFilter
-                label="Type de moteur"
-                dbName="motor_kind"
-                defaultValue={BikeFilterDescription.motor_kind.defaultValue}
-                options={[
-                  {
-                    label: "Roue Arrière",
-                    value: "rear",
-                  },
-                  {
-                    label: "Pédalier",
-                    value: "center",
-                  },
-                  {
-                    label: "Roue Avant",
-                    value: "front",
-                  },
-                ]}
-              />
-              <EnumFilter
-                label="Lumières intégrées"
-                dbName="integrated_lights"
-                defaultValue={BikeFilterDescription.integrated_lights.defaultValue}
-                options={[
-                  {
-                    label: "Oui",
-                    value: "true",
-                  },
-                  {
-                    label: "Non",
-                    value: "false",
-                  },
-                ]}
-              />
+              {
+                Object.entries(BikeFilterDescription).map(([key, value]) => {
+                  switch (value.type) {
+                    case BikeFilterType.RANGE:
+                      return <RangeFilter
+                        label={value.label}
+                        dbName={key}
+                        unit="km"
+                        defaultValue={value.defaultValue}
+                        min={Math.min(...value.range)}
+                        max={Math.max(...value.range)}
+                      />;
+                    case BikeFilterType.ENUM:
+                      return <EnumFilter
+                        label={value.label}
+                        dbName={key}
+                        defaultValue={value.defaultValue}
+                        options={value.options}
+                      />;
+                    case BikeFilterType.BOOLEAN:
+                      return <EnumFilter
+                        label={value.label}
+                        dbName={key}
+                        defaultValue={value.defaultValue}
+                        options={[
+                          {
+                            label: "Oui",
+                            value: "true",
+                          },
+                          {
+                            label: "Non",
+                            value: "false",
+                          },
+                        ]}
+                      />;
+                  }
+                })
+              }
             </Form>
           </div>
         </div>

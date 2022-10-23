@@ -4,11 +4,11 @@ export enum BikeFilterType {
     BOOLEAN,
 }
 
-export interface RangeType {
+export interface RangeFilter {
     type: BikeFilterType.RANGE,
     label: string,
+    unit: string,
     range: number[],
-    defaultValue: number[],
 }
 
 export interface EnumOption {
@@ -16,29 +16,54 @@ export interface EnumOption {
     value: string,
 }
 
-export interface EnumType {
+export interface EnumFilter {
     type: BikeFilterType.ENUM,
     label: string,
     options: EnumOption[],
-    defaultValue: string[],
 }
 
-export interface BooleanType {
+export interface BooleanFilter {
     type: BikeFilterType.BOOLEAN,
     label: string,
-    defaultValue: string[],
 }
 
-export interface BikeFilterDescriptionType {
-    [fieldName: string]: RangeType | EnumType | BooleanType
+export type AnyFilter = RangeFilter | EnumFilter | BooleanFilter
+
+export interface BikeFilterCollection {
+    [fieldName: string]: AnyFilter
 }
 
-export const BikeFilterDescription: BikeFilterDescriptionType = {
+export const BikeFilters: BikeFilterCollection = {
+    kind: {
+        type: BikeFilterType.ENUM,
+        label: "Type de vélo",
+        options: [{
+            label: "VTT",
+            value: "vtt",
+          },
+          {
+            label: "VTC",
+            value: "vtc",
+          },
+          {
+            label: "Ville",
+            value: "city",
+          },
+          {
+            label: "Pliant",
+            value: "folding",
+          },
+          {
+            label: "Cargo",
+            value: "cargo",
+          },
+        ],
+    },
     battery_life: {
         type: BikeFilterType.RANGE,
         label: "Autonomie",
+        unit: "km",
         range: [0, 200],
-        defaultValue: [0, 200],
     },
     motor_kind: {
         type: BikeFilterType.ENUM,
@@ -56,17 +81,14 @@ export const BikeFilterDescription: BikeFilterDescriptionType = {
             value: "front",
           },
         ],
-        defaultValue: ["rear", "center", "front"],
     },
     integrated_lights: {
         type: BikeFilterType.BOOLEAN,
         label: "Lumières intégrées",
-        defaultValue: ["true", "false"],
     },
     removable_battery: {
         type: BikeFilterType.BOOLEAN,
         label: "Batterie amovible",
-        defaultValue: ["true", "false"],
     },
     front_brakes: {
         type: BikeFilterType.ENUM,
@@ -84,7 +106,6 @@ export const BikeFilterDescription: BikeFilterDescriptionType = {
             value: "rim",
           },
         ],
-        defaultValue: ["hydraulic_disc", "mechanical_disc", "rim"],
     },
     rear_brakes: {
         type: BikeFilterType.ENUM,
@@ -102,6 +123,25 @@ export const BikeFilterDescription: BikeFilterDescriptionType = {
             value: "rim",
           },
         ],
-        defaultValue: ["hydraulic_disc", "mechanical_disc", "rim"],
-    }
+    },
+}
+
+export function getDefaultRangeValue(filter: RangeFilter) {
+    return filter.range;
+}
+export function getDefaultEnumValue(filter: EnumFilter) {
+    return filter.options.map(o => o.value);
+}
+export function getDefaultBooleanValue() {
+    return ["true", "false"];
+}
+export function getDefaultValue(filter: AnyFilter) : string[] | number[] {
+  switch (filter.type) {
+    case BikeFilterType.ENUM:
+      return getDefaultEnumValue(filter);
+    case BikeFilterType.RANGE:
+      return getDefaultRangeValue(filter);
+    case BikeFilterType.BOOLEAN:
+      return getDefaultBooleanValue();
+  }
 }

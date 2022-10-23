@@ -7,20 +7,29 @@ import Box from '@mui/joy/Box';
 import ListItem from '@mui/joy/ListItem';
 import Checkbox from '@mui/joy/Checkbox';
 import List from '@mui/joy/List';
-import { EnumFilter, getDefaultEnumValue } from '~/models/bikes';
+import { BooleanFilter, getDefaultBooleanValue } from '~/models/bikes';
 
 interface Props {
     name: string,
-    description: EnumFilter,
+    description: BooleanFilter,
 }
 
 export default function EnumFilter({ name, description }: Props) {
-    const { label, options } = description;
-
+    const { label } = description;
+    const options = [
+        {
+          label: "Oui",
+          value: "true",
+        },
+        {
+          label: "Non",
+          value: "false",
+        },
+    ];
     const submit = useSubmit();
     const [searchParams] = useSearchParams();
     const urlValue = searchParams.getAll(name);
-    const [value, setValue] = React.useState(urlValue.length ? urlValue : getDefaultEnumValue(description));
+    const [value, setValue] = React.useState(urlValue.length ? urlValue : getDefaultBooleanValue());
 
     const debouncedSubmit = useCallback(
         debounce((target: any, options: any) => submit(target, options), 250),

@@ -4,7 +4,7 @@ import { Form, Link, useLoaderData } from "@remix-run/react";
 
 // MODELS
 import { Bike, getBikeListItems } from "~/models/bikes.server";
-import { BikeFilterDescription, BikeFilterType } from "~/models/bikes";
+import { BikeFilters, BikeFilterType, getDefaultValue } from "~/models/bikes";
 
 // UI
 import Grid from '@mui/material/Grid';
@@ -12,6 +12,7 @@ import OverflowCard from "~/ui/OverflowCard";
 
 import RangeFilter from "~/ui/RangeFilter";
 import EnumFilter from "~/ui/EnumFilter";
+import BooleanFilter from "~/ui/BooleanFilter";
 
 type LoaderData = {
   bikeListItems: Bike[];
@@ -20,9 +21,9 @@ type LoaderData = {
 export async function loader({ request }: LoaderArgs) {
     const url = new URL(request.url);
     const searchFields = Object.fromEntries(
-      Object.entries(BikeFilterDescription).map(([key, value]) => {
+      Object.entries(BikeFilters).map(([key, value]) => {
         const urlValue = url.searchParams.getAll(key);
-        return [key, urlValue.length ? urlValue : BikeFilterDescription[key].defaultValue.map(v => v.toString())];
+        return [key, urlValue.length ? urlValue : getDefaultValue(BikeFilters[key]).map(v => v.toString())];
       })
     );
 
@@ -43,39 +44,22 @@ export default function BikesPage() {
           <div className="flex-1 p-6">
             <Form method="get">
               {
-                Object.entries(BikeFilterDescription).map(([key, value]) => {
+                Object.entries(BikeFilters).map(([key, value]) => {
                   switch (value.type) {
                     case BikeFilterType.RANGE:
                       return <RangeFilter
-                        label={value.label}
-                        dbName={key}
-                        unit="km"
-                        defaultValue={value.defaultValue}
-                        min={Math.min(...value.range)}
-                        max={Math.max(...value.range)}
+                          name={key}
+                          description={value}
                       />;
                     case BikeFilterType.ENUM:
                       return <EnumFilter
-                        label={value.label}
-                        dbName={key}
-                        defaultValue={value.defaultValue}
-                        options={value.options}
+                          name={key}
+                          description={value}
                       />;
                     case BikeFilterType.BOOLEAN:
-                      return <EnumFilter
-                        label={value.label}
-                        dbName={key}
-                        defaultValue={value.defaultValue}
-                        options={[
-                          {
-                            label: "Oui",
-                            value: "true",
-                          },
-                          {
-                            label: "Non",
-                            value: "false",
-                          },
-                        ]}
+                      return <BooleanFilter
+                          name={key}
+                          description={value}
                       />;
                   }
                 })

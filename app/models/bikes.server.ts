@@ -1,4 +1,4 @@
-import { BikeFilterDescription, BikeFilterType } from "./bikes";
+import { BikeFilters, BikeFilterType } from "./bikes";
 import { supabase } from "./supabase.server";
 
 export type Bike = {
@@ -13,13 +13,13 @@ export type Bike = {
 
 export async function getBikeListItems(input: {[fieldName: string]: string[]}): Promise<Bike[] | null> {
     let selectedFields = ["id", "product_name", "source", "pictures", "brand"];
-    selectedFields = [...new Set(selectedFields.concat(Object.keys(BikeFilterDescription)))];
+    selectedFields = [...new Set(selectedFields.concat(Object.keys(BikeFilters)))];
 
     const query = supabase
         .from("ebikes")
         .select(selectedFields.join(", "));
 
-    for (let [key, value] of Object.entries(BikeFilterDescription)) {
+    for (let [key, value] of Object.entries(BikeFilters)) {
         switch (value.type) {
             case BikeFilterType.RANGE:
                 if (input[key].length != 2) break;

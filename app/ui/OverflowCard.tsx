@@ -17,7 +17,7 @@ interface Props {
 
 export default function OverflowCard({ img, link, title, subtitle, left_footer, right_footer }: Props) {
     return (
-        <Card variant="outlined" sx={{ width: 320 }}>
+        <Card variant="outlined" sx={{ width: 286 }}>
             <CardOverflow>
                 <AspectRatio ratio="1.2">
                     <img

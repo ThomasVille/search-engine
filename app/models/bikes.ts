@@ -145,3 +145,5 @@ export function getDefaultValue(filter: AnyFilter) : string[] | number[] {
       return getDefaultBooleanValue();
   }
 }
+
+export const NB_ELEMENTS_PER_PAGE = 12;

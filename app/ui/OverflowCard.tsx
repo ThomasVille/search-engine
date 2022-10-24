@@ -49,13 +49,14 @@ export default function OverflowCard({ img, link, title, subtitle, left_footer, 
                 variant="soft"
                 sx={{
                     display: 'flex',
-                    gap: 1.5,
+                    gap: 1.2,
                     py: 1.5,
                     px: 'var(--Card-padding)',
                     bgcolor: 'background.level1',
+                    alignItems: "center",
                 }}
             >
-                <Typography level="body3" sx={{ fontWeight: 'md', color: 'text.secondary' }}>
+                <Typography level="body2" sx={{ fontWeight: 'md', color: 'text.secondary' }}>
                     {left_footer}
                 </Typography>
                 <Divider orientation="vertical" />

@@ -9,6 +9,7 @@ export type Bike = {
     battery_life: number;
     brand: string;
     motor_kind: string;
+    price: number;
 };
 
 const getPagination = (page: number, size: number) => {
@@ -20,7 +21,7 @@ const getPagination = (page: number, size: number) => {
 }
 
 export async function getBikeListItems(page: number, input: {[fieldName: string]: string[]}): Promise<{data: Bike[] | null, count: number | null}> {
-    let selectedFields = ["id", "product_name", "source", "pictures", "brand"];
+    let selectedFields = ["id", "product_name", "source", "pictures", "brand", "price"];
     selectedFields = [...new Set(selectedFields.concat(Object.keys(BikeFilters)))];
     const { from, to } = getPagination(page, NB_ELEMENTS_PER_PAGE);
 

@@ -92,8 +92,8 @@ export default function BikesPage() {
                                         link={bike.source}
                                         title={bike.product_name}
                                         subtitle={bike.brand}
-                                        left_footer={bike.battery_life + "km"}
-                                        right_footer={""} />
+                                        left_footer={bike.price + "€"}
+                                        right_footer={bike.battery_life + "km"} />
                                 </Grid>
                             ))
                         )}
@@ -104,6 +104,7 @@ export default function BikesPage() {
                         <Pagination
                             page={page}
                             count={Math.ceil((totalNbResults || 0) / NB_ELEMENTS_PER_PAGE)}
+                            className="pt-5"
                             sx={{ ul: { justifyContent: "center" }}}
                             renderItem={(item) => {
                                 const query = new URLSearchParams(location.search);

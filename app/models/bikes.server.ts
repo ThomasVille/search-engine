@@ -1,4 +1,4 @@
-import { BikeFilters, BikeFilterType, NB_ELEMENTS_PER_PAGE } from "./bikes";
+import { BikeFilters, BikeFilterType, getSortDetails, NB_ELEMENTS_PER_PAGE } from "./bikes";
 import { supabase } from "./supabase.server";
 
 export type Bike = {
@@ -20,15 +20,17 @@ const getPagination = (page: number, size: number) => {
     return { from, to }
 }
 
-export async function getBikeListItems(page: number, input: {[fieldName: string]: string[]}): Promise<{data: Bike[] | null, count: number | null}> {
+export async function getBikeListItems(page: number, input: {[fieldName: string]: string[]}, sort: string): Promise<{data: Bike[] | null, count: number | null}> {
     let selectedFields = ["id", "product_name", "source", "pictures", "brand", "price"];
     selectedFields = [...new Set(selectedFields.concat(Object.keys(BikeFilters)))];
     const { from, to } = getPagination(page, NB_ELEMENTS_PER_PAGE);
 
+    const { field: sortField, ascending } = getSortDetails(sort);
+
     const query = supabase
         .from("ebikes")
         .select(selectedFields.join(", "), { count: "exact" })
-        .order("product_name", { ascending: true })
+        .order(sortField, { ascending })
         .range(from, to);
 
     for (let [key, value] of Object.entries(BikeFilters)) {

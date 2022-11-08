@@ -1,7 +1,9 @@
 export enum BikeFilterType {
-    ENUM,
-    RANGE,
-    BOOLEAN,
+    ENUM, // Enumeration of strings.
+    RANGE, // Number that will be filtered by a range.
+    BOOLEAN, // Boolean.
+    STRING, // Arbitrary string that's not part of an enumeration.
+    NUMBER, // Arbitrary number that can't be part of a range.
 }
 
 export interface RangeFilter {
@@ -27,7 +29,17 @@ export interface BooleanFilter {
     label: string,
 }
 
-export type AnyFilter = RangeFilter | EnumFilter | BooleanFilter
+export interface StringFilter {
+  type: BikeFilterType.STRING,
+  label: string,
+}
+
+export interface NumberFilter {
+  type: BikeFilterType.NUMBER,
+  label: string,
+}
+
+export type AnyFilter = RangeFilter | EnumFilter | BooleanFilter | StringFilter | NumberFilter
 
 export interface BikeFilterCollection {
     [fieldName: string]: AnyFilter
@@ -124,6 +136,15 @@ export const BikeFilters: BikeFilterCollection = {
           },
         ],
     },
+
+    product_name: {
+      type: BikeFilterType.STRING,
+      label: "Nom",
+    },
+    price: {
+      type: BikeFilterType.NUMBER,
+      label: "Prix",
+    }
 }
 
 export function getDefaultRangeValue(filter: RangeFilter) {
@@ -143,7 +164,37 @@ export function getDefaultValue(filter: AnyFilter) : string[] | number[] {
       return getDefaultRangeValue(filter);
     case BikeFilterType.BOOLEAN:
       return getDefaultBooleanValue();
+    case BikeFilterType.STRING:
+      return [""];
+    case BikeFilterType.NUMBER:
+      return [0];
   }
 }
 
 export const NB_ELEMENTS_PER_PAGE = 12;
+
+export interface SortDetails {
+  field: string
+  ascending: boolean
+}
+
+export function getSortDetails(sortField: string): SortDetails {
+  const parts = sortField.split('.');
+
+  if (parts.length !== 2) {
+    console.error(`Invalid sortField ${sortField}`);
+    return {
+      field: 'price',
+      ascending: true
+    }
+  }
+
+  return {
+    field: parts[0],
+    ascending: parts[1] === "asc",
+  };
+}
+
+export function canSort(filter: AnyFilter) {
+  return filter.type === BikeFilterType.RANGE || filter.type === BikeFilterType.NUMBER;
+}

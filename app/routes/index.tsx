@@ -64,7 +64,7 @@ export default function BikesPage() {
         <div className="lg:container lg:mx-auto">
             <Header />
             <main className="py-14 lg:p-0 flex h-full bg-white">
-                <div className="flex">
+                <div className="flex w-screen overflow-hidden">
                     {
                         isDesktop ?
                         <FilterMenu sortField={sortField} /> : null
@@ -78,30 +78,61 @@ export default function BikesPage() {
                                 </Box>
                             ) : null
                         }
-                        <Grid container spacing={1}>
-                            {(!data.bikeListItems || data.bikeListItems.length === 0) ? (
-                                <p className="p-4">Aucun vélo ne correspond à ces critères</p>
+                        {
+                            isDesktop ? (
+                                <Grid container spacing={1}>
+                                    {(!data.bikeListItems || data.bikeListItems.length === 0) ? (
+                                        <p className="p-4">Aucun vélo ne correspond à ces critères</p>
+                                    ) : (
+                                        data.bikeListItems.map((bike) => (
+                                            <Grid item key={bike.id}>
+                                                <OverflowCard
+                                                    img={bike.pictures[0]}
+                                                    link={bike.source}
+                                                    title={bike.product_name}
+                                                    subtitle={bike.brand}
+                                                    left_footer={bike.price + "€"}
+                                                    right_footer={bike.battery_life + "km"} />
+                                            </Grid>
+                                        ))
+                                    )}
+                                </Grid>
                             ) : (
-                                data.bikeListItems.map((bike) => (
-                                    <Grid item key={bike.id}>
-                                        <OverflowCard
-                                            img={bike.pictures[0]}
-                                            link={bike.source}
-                                            title={bike.product_name}
-                                            subtitle={bike.brand}
-                                            left_footer={bike.price + "€"}
-                                            right_footer={bike.battery_life + "km"} />
-                                    </Grid>
-                                ))
-                            )}
-                        </Grid>
+                                <div className="divide-y">
+                                    {(!data.bikeListItems || data.bikeListItems.length === 0) ? (
+                                        <p className="p-4">Aucun vélo ne correspond à ces critères</p>
+                                    ) : (
+                                        data.bikeListItems.map((bike) => (
+                                            <a href={bike.source} className="block">
+                                                <div key={bike.id} className="flex h-24 p-2 items-stretch w-screen">
+                                                    <img
+                                                        src={bike.pictures[0]}
+                                                        loading="lazy"
+                                                        alt={`Illustration du vélo ${bike.product_name}`}
+                                                        className="w-20 h-20"
+                                                    />
+                                                    <div className="flex flex-col pl-2 flex-grow overflow-hidden">
+                                                        <div className="font-bold w-full text-ellipsis overflow-hidden whitespace-nowrap">{bike.product_name}</div>
+                                                        <h5>{bike.brand}</h5>
+                                                        <div className="flex justify-between">
+                                                            <p>{bike.battery_life + "km"}</p>
+                                                            <p className="font-bold text-orange-800">{bike.price + "€"}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        ))
+                                    )}
+                                </div>
+                            )
+                        }
                         {
                             (totalNbResults <= NB_ELEMENTS_PER_PAGE && totalNbResults > 0) ?
                             <p className="pt-5" style={{ textAlign: "center" }}>Fin des résultats !</p> :
                             <Pagination
                                 page={page}
                                 count={Math.ceil((totalNbResults || 0) / NB_ELEMENTS_PER_PAGE)}
-                                className="pt-5"
+                                className="p-0 lg:pt-5"
                                 sx={{ ul: { justifyContent: "center" }}}
                                 renderItem={(item) => {
                                     const query = new URLSearchParams(location.search);

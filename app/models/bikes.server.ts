@@ -10,6 +10,8 @@ export type Bike = {
     brand: string;
     motor_kind: string;
     price: number;
+    torque: number | undefined;
+    removable_battery: boolean | undefined;
 };
 
 const getPagination = (page: number, size: number) => {
@@ -51,6 +53,20 @@ export async function getBikeListItems(page: number, input: {[fieldName: string]
                 break;
         }
     }
+
+    return await query;
+}
+
+export async function getBike(bikeId: string): Promise<{data: Bike | null}> {
+    let selectedFields = ["id", "product_name", "source", "pictures", "brand", "price", "torque", "removable_battery"];
+    selectedFields = [...new Set(selectedFields.concat(Object.keys(BikeFilters)))];
+
+    const query = supabase
+        .from("ebikes")
+        .select(selectedFields.join(", "))
+        .eq("id", bikeId)
+        .limit(1)
+        .maybeSingle();
 
     return await query;
 }

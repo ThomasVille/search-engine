@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ebikes {
+  id                    Int       @id @default(autoincrement())
+  created_at            DateTime? @default(now()) @db.Timestamptz(6)
+  product_name          String?
+  battery_life          Decimal?  @db.Decimal
+  torque                Decimal?  @db.Decimal
+  integrated_lights     Boolean?
+  source                String?
+  pictures              String[]
+  brand                 String?
+  motor_kind            String?
+  front_brakes          String?
+  rear_brakes           String?
+  removable_battery     Boolean?
+  kind                  String?
+  price                 Int?
+  battery_recharge_time Int?      @db.SmallInt
+}

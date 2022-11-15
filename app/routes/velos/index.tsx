@@ -5,7 +5,8 @@ import { Link, useLoaderData, useLocation, useSubmit } from "@remix-run/react";
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 // MODELS
-import { Bike, getBikeListItems } from "~/models/bikes.server";
+import { ebikes } from '@prisma/client'
+import { getBikeListItems } from "~/models/bikes.server";
 import { BikeFilters, getDefaultValue, NB_ELEMENTS_PER_PAGE } from "~/models/bikes";
 
 // UI
@@ -20,7 +21,7 @@ import { debounce } from 'lodash';
 import FilterMenu from '~/ui/FilterMenu';
 
 type LoaderData = {
-    bikeListItems: Bike[];
+    bikeListItems: ebikes[];
     count: number | null;
 };
 
@@ -48,7 +49,7 @@ export default function BikesPage() {
     const query = new URLSearchParams(location.search);
     const page = parseInt(query.get('page') || '1', 10);
     const isDesktop = useMediaQuery((theme: any) => theme.breakpoints.up('lg'));
-    const [sortField, setSortField] = React.useState(query.get('sort') || 'price');
+    const [sortField, setSortField] = React.useState(query.get('sort') || 'price.asc');
     const debouncedSubmit = useCallback(
         debounce((target: any, options: any) => submit(target, options), 250),
         [],
@@ -87,8 +88,8 @@ export default function BikesPage() {
                                             <OverflowCard
                                                 img={bike.pictures[0]}
                                                 link={`/velos/${bike.id}`}
-                                                title={bike.product_name}
-                                                subtitle={bike.brand}
+                                                title={bike.product_name || ''}
+                                                subtitle={bike.brand || ''}
                                                 left_footer={bike.price + "€"}
                                                 right_footer={bike.battery_life + "km"} />
                                         </Grid>
@@ -138,7 +139,7 @@ export default function BikesPage() {
 
                                 return <PaginationItem
                                     component={Link}
-                                    to={`/?${query.toString()}`}
+                                    to={`/velos?${query.toString()}`}
                                     {...item}
                                 />;
                             }}

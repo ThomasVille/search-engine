@@ -3,18 +3,19 @@ import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 
 // MODELS
-import { Bike, getBike } from "~/models/bikes.server";
+import { getBike } from "~/models/bikes.server";
 import { BikeFilters, EnumFilter } from '~/models/bikes';
+import { ebikes } from "@prisma/client";
 
 type LoaderData = {
-    bike: Bike;
+    bike: ebikes;
 };
 
 export async function loader({ params }: LoaderArgs) {
     if (!params.bikeId) {
         throw new Response("Not Found", { status: 404 });
     }
-    const { data: bike } = await getBike(params.bikeId);
+    const bike = await getBike(params.bikeId);
 
     return json({ bike });
 };
@@ -75,7 +76,7 @@ export default function BikesPage() {
                     </div>
                     <div>
                         <div className="font-bold text-xl">Revendeurs</div>
-                        <a href={data.bike.source}>Revendeur 1</a>
+                        <a href={data.bike.source || ''}>Revendeur 1</a>
                     </div>
                 </div>
             </div>

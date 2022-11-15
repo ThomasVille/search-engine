@@ -50,7 +50,7 @@ export default function SortMenu({selected, setSelected}: SortMenuProps) {
             >
                 {
                     Object.entries(BikeFilters).filter(([key, value]) => canSort(value)).sort((a, b) => a[1].label.localeCompare(b[1].label)).flatMap(([key, value]) => ([
-                        <MenuItem selected={sortField === key && ascending} onClick={handleClose(key + '.asc')}>
+                        <MenuItem key={key} selected={sortField === key && ascending} onClick={handleClose(key + '.asc')}>
                             <ListItemDecorator>
                                 <NorthIcon />
                             </ListItemDecorator>

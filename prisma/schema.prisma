@@ -24,4 +24,5 @@ model ebikes {
   kind                  String?
   price                 Int?
   battery_recharge_time Int?      @db.SmallInt
+  source_page           String?
 }

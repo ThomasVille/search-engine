@@ -14,7 +14,7 @@ model ebikes {
   battery_life          Decimal?  @db.Decimal
   torque                Decimal?  @db.Decimal
   integrated_lights     Boolean?
-  source                String?
+  source                String?   @unique
   pictures              String[]
   brand                 String?
   motor_kind            String?
@@ -25,4 +25,25 @@ model ebikes {
   price                 Int?
   battery_recharge_time Int?      @db.SmallInt
   source_page           String?
+}
+
+model websites {
+  id                             String    @id @default(uuid())
+  created_at                     DateTime? @default(now()) @db.Timestamptz(6)
+  name                           String
+  base_url                       String
+  bikes_list_pages               String[]
+  bikes_list_selector            String?
+  battery_life_selector          String?
+  torque_selector                String?
+  integrated_lights_selector     String?
+  pictures_selector              String?
+  brand_selector                 String?
+  motor_kind_selector            String?
+  front_brakes_selector          String?
+  rear_brakes_selector           String?
+  removable_battery_selector     String?
+  kind_selector                  String?
+  price_selector                 String?
+  battery_recharge_time_selector String?
 }

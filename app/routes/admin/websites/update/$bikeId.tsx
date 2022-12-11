@@ -25,4 +25,4 @@ export async function action({ request, params }: ActionArgs) {
     await updateSourcePage(params.bikeId, page.data);
 
     return redirect(`/admin/velos/${params.bikeId}`);
-  }
+}

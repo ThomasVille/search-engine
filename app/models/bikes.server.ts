@@ -7,6 +7,7 @@ export async function getBikeListItems(page: number, input: {[fieldName: string]
 
     let whereClause: any = {};
     for (let [key, value] of Object.entries(BikeFilters)) {
+        if (!(key in input)) continue;
         switch (value.type) {
             case BikeFilterType.RANGE:
                 if (input[key].length != 2) break;
@@ -58,5 +59,23 @@ export async function getBike(bikeId: string): Promise<ebikes | null> {
         where: {
             id: parseInt(bikeId)
         }
+    });
+}
+
+export async function updateSourcePage(bikeId: string, sourcePage: string): Promise<ebikes | null> {
+    return await prisma.ebikes.update({
+        where: {
+            id: parseInt(bikeId)
+        },
+        data: {
+            source_page: sourcePage
+        }
+    });
+}
+
+export async function createBikes(bikes: Partial<ebikes>[]) {
+    return await prisma.ebikes.createMany({
+        data: bikes,
+        skipDuplicates: true,
     });
 }

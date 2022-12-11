@@ -290,3 +290,60 @@ This project uses ESLint for linting. That is configured in `.eslintrc.js`.
 ### Formatting
 
 We use [Prettier](https://prettier.io/) for auto-formatting in this project. It's recommended to install an editor plugin (like the [VSCode Prettier plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)) to get auto-formatting on save. There's also a `npm run format` script you can run to format all files in the project.
+
+## Prisma
+
+Push local changes made to `schema.prisma` to the dev database:
+```
+npx prisma db push
+npx prisma generate
+```
+
+Deploy changes on production database:
+1. Make .env point to the production database.
+2. Run:
+```
+npx prisma migrate dev
+```
+
+## Troubleshooting
+
+### Cannot migrate
+
+I had this error:
+```
+$ npx prisma migrate deploy
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "db.dcqgamxtcaxyppbojtvt.supabase.co:5432"
+
+2 migrations found in prisma/migrations
+
+Applying migration `20221115235709_add_ebikes_source_page`
+Error: P3018
+
+A migration failed to apply. New migrations cannot be applied before the error is recovered from. Read more about how to resolve migration issues in a production database: https://pris.ly/d/migrate-resolve
+
+Migration name: 20221115235709_add_ebikes_source_page
+
+Database error code: 42501
+
+Database error:
+ERROR: must be owner of table ebikes
+
+DbError { severity: "ERROR", parsed_severity: Some(Error), code: SqlState(E42501), message: "must be owner of table ebikes", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("aclchk.c"), line: Some(3583), routine: Some("aclcheck_error") }
+```
+
+I ran:
+```sql
+alter table ebikes owner to postgres;
+```
+
+then:
+```sql
+npx prisma migrate resolve --rolled-back 20221115235709_add_ebikes_source_page
+npx prisma migrate deploy
+```
+
+and it worked.
+

@@ -1,7 +1,10 @@
+import { Button } from "@mui/joy";
 import { ebikes } from "@prisma/client";
 import { json, LoaderArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getBikeListItems } from "~/models/bikes.server";
+import { Else, If, Then } from "~/ui/If";
+import { Map } from "~/ui/Map";
 
 type LoaderData = {
     bikeListItems: ebikes[];
@@ -17,29 +20,34 @@ export default function AdminBikesPage() {
     const data = useLoaderData<typeof loader>() as LoaderData;
 
     return <div className="divide-y">
-        {(!data.bikeListItems || data.bikeListItems.length === 0) ? (
-            <p className="p-4">Aucun vélo ne correspond à ces critères</p>
-        ) : (
-            data.bikeListItems.map((bike) => (
-                <a href={`/velos/${bike.id}`} className="block">
-                    <div key={bike.id} className="flex h-24 p-2 items-stretch w-screen">
-                        <img
-                            src={bike.pictures[0]}
-                            loading="lazy"
-                            alt={`Illustration du vélo ${bike.product_name}`}
-                            className="w-20 h-20"
-                        />
-                        <div className="flex flex-col pl-2 flex-grow overflow-hidden">
-                            <div className="font-bold w-full text-ellipsis overflow-hidden whitespace-nowrap">{bike.product_name}</div>
-                            <h5>{bike.brand}</h5>
-                            <div className="flex justify-between">
-                                <p>{bike.battery_life + "km"}</p>
-                                <p className="font-bold text-gray-500">{bike.price + "€"}</p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            ))
-        )}
+        <table className="table-auto w-full">
+            <thead>
+                <tr>
+                    <th>Nom du produit</th>
+                    <th>URL</th>
+                    <th>Récupérer les infos</th>
+                </tr>
+            </thead>
+            <tbody>
+                <If when={!!data.bikeListItems}>
+                    <Then>
+                        <Map array={data.bikeListItems}>
+                            {(bike: ebikes) => (
+                                <tr key={bike.id}>
+                                    <td>{bike.product_name}</td>
+                                    <td>{bike.source}</td>
+                                    <td className='text-center'>
+                                            <Button variant="soft" className="w-40" type="submit">Récupérer</Button>
+                                    </td>
+                                </tr>
+                            )}
+                        </Map>
+                    </Then>
+                    <Else>
+                        Aucun vélo
+                    </Else>
+                </If>
+            </tbody>
+        </table>
     </div>;
 }

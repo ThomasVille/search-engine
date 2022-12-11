@@ -17,11 +17,11 @@ export async function action({ request, params }: ActionArgs) {
     const $ = cheerio.load(website.bikes_list_pages[0]);
 
     const computed_bikes = Array.from($('div.product-list > div.vtmn-flex')).map(e => ({
-        source: Array.from($('a.dpb-product-model-link', e))[0].attribs.href,
+        source: (new URL(Array.from($('a.dpb-product-model-link', e))[0].attribs.href, new URL(website.base_url).origin)).href,
         product_name: $('a.dpb-product-model-link span', e).text(),
     })).filter(e => !e.product_name.toLowerCase().includes('reconditionné'))
     console.log(
-        {computed_bikes}
+        {computed_bikes},
     )
 
     const res = await createBikes(computed_bikes);
